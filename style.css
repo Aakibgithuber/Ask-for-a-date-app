@@ -3,8 +3,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-
-  background: linear-gradient(rgb(0, 249, 236), rgb(71, 150, 229));
+  background: linear-gradient(rgb(235, 114, 218), rgb(71, 150, 229));
 }
 
 #noButton {
@@ -24,7 +23,6 @@ body {
   font-family: "Nunito";
   font-size: 50px;
   font-weight: bold;
-
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -51,7 +49,7 @@ body {
 }
 
 .btn {
-  background-color: #017cff;
+  background-color: #0abac0;
   color: white;
   font-weight: 600;
   padding: 15px 32px;
@@ -76,13 +74,42 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 p {
   color: white;
   margin-left: 50%;
 }
+
 p a {
   color: rgb(255, 255, 255);
   font-size: 20px;
   font-weight: 600;
   opacity: 0.25;
+}
+
+/* New styles for the calendar */
+#calendar {
+  margin-top: 30px;
+  border-collapse: collapse;
+  width: 300px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#calendar th, #calendar td {
+  padding: 15px;
+  text-align: center;
+}
+
+#calendar th {
+  background-color: #1d97e9;
+  color: white;
+}
+
+#calendar td {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#calendar td:hover {
+  background-color: #ecf0f1;
 }
