@@ -11,13 +11,12 @@
   </div>
   <div class="gif_container">
     <img
-      src="https://media2.giphy.com/media/j0vs5H7Kcz3Pm9LRDa/200w.gif?cid=6c09b952x0tmrn5cg0bw1z820lmuomzac7azkxmnpp3xjojg&ep=v1_gifs_search&rid=200w.gif&ct=g"
+      src="https://i.postimg.cc/wTDG30TB/yes.gif"
       alt="Cute animated illustration"
     />
   </div>
 
-  <!-- Insert the calendar code here -->
-
+  <!-- Calendar code -->
   <table id="calendar">
     <thead>
       <tr>
@@ -35,54 +34,117 @@
     </tbody>
   </table>
 
-  <button class="btn" id="yesButton" onclick="nextPage()">
+  <button class="btn" id="yesButton" onclick="saveAndNavigateToNextPage()">
     Let's Fix a Date
   </button>
-</div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Get the table body
-    var calendarBody = document.querySelector('#calendar tbody');
+  <div id="savedDatesContainer"></div>
 
-    // Generate calendar content for the current month
-    generateCalendar(new Date());
+  <!-- ... (rest of your HTML code) ... -->
 
-    function generateCalendar(date) {
-      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-      var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-      var currentDate = new Date(firstDay);
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the table body
+      var calendarBody = document.querySelector('#calendar tbody');
 
-      while (currentDate <= lastDay) {
-        var row = document.createElement('tr');
+      // Generate calendar content for the current month
+      generateCalendar(new Date());
 
-        for (var i = 0; i < 7; i++) {
-          var cell = document.createElement('td');
-          cell.textContent = currentDate.getDate();
-          cell.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
+      function generateCalendar(date) {
+        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        var currentDate = new Date(firstDay);
 
-          // Attach a click event listener to each date cell
-          cell.addEventListener('click', function() {
-            // Redirect to the next page with the selected date
-            var selectedDate = this.getAttribute('data-date');
-            window.location.href = 'nextpage.html?date=' + selectedDate;
-          });
+        while (currentDate <= lastDay) {
+          var row = document.createElement('tr');
 
-          row.appendChild(cell);
-          currentDate.setDate(currentDate.getDate() + 1);
+          for (var i = 0; i < 7; i++) {
+            var cell = document.createElement('td');
+            cell.textContent = currentDate.getDate();
+            cell.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
+
+            // Attach a click event listener to each date cell
+            cell.addEventListener('click', function() {
+              // Save the selected date and navigate to the next page
+              saveAndNavigateToNextPage(this.getAttribute('data-date'));
+            });
+
+            row.appendChild(cell);
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+
+          calendarBody.appendChild(row);
         }
-
-        calendarBody.appendChild(row);
       }
-    }
 
-    // Function to handle the button click event
-    function nextPage() {
-      // Redirect to the next page (you can customize the URL)
-      window.location.href = 'nextpage.html';
-    }
-  });
-</script>
+      // Function to handle the button click event
+      function saveAndNavigateToNextPage(selectedDate) {
+        // Save the selected date to the server (similar to the previous example)
+        saveToFileOnServer(selectedDate);
+
+        // Navigate to the next page (you can customize the URL)
+        window.location.href = 'nextpage.html';
+      }
+  // Function to handle the button click event
+  function saveAndNavigateToNextPage(selectedDate) {
+    // Save the selected date to the server
+    saveToFileOnServer(selectedDate);
+
+    // Navigate to the next page (you can customize the URL)
+    window.location.href = 'nextpage.html';
+  }
+
+  // Function to save the selected date to the server
+  function saveToFileOnServer(selectedDate) {
+    fetch('http://localhost:3000/saveToFile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: selectedDate,
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save the date.');
+        }
+        console.log('Date saved successfully!');
+      })
+      .catch(error => {
+        console.error('Error saving the date:', error);
+      });
+  }
+
+      // Function to fetch and display saved dates
+      function fetchAndDisplaySavedDates() {
+        // Fetch the saved dates from the server
+        fetch('http://localhost:3000/getSavedDates')
+          .then(response => response.json())
+          .then(data => {
+            // Display the saved dates
+            var savedDatesContainer = document.getElementById('savedDatesContainer');
+            savedDatesContainer.innerHTML = '<h2>Saved Dates:</h2>';
+
+            if (data.dates.length > 0) {
+              var ul = document.createElement('ul');
+              data.dates.forEach(date => {
+                var li = document.createElement('li');
+                li.textContent = date;
+                ul.appendChild(li);
+              });
+              savedDatesContainer.appendChild(ul);
+            } else {
+              savedDatesContainer.innerHTML += '<p>No saved dates yet.</p>';
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching saved dates:', error);
+          });
+      }
+
+      // Call the function to fetch and display saved dates
+      fetchAndDisplaySavedDates();
+    });
+  </script>
 
 </body>
 </html>
