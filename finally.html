@@ -15,8 +15,11 @@
       alt="Cute animated illustration"
     />
   </div>
+  <div>
+    <h2 class="header_text">Let's Fix a Date</h2>
+  </div>
+  <!-- Insert the calendar code here -->
 
-  <!-- Calendar code -->
   <table id="calendar">
     <thead>
       <tr>
@@ -34,117 +37,73 @@
     </tbody>
   </table>
 
-  <button class="btn" id="yesButton" onclick="saveAndNavigateToNextPage()">
-    Let's Fix a Date
-  </button>
-
   <div id="savedDatesContainer"></div>
 
-  <!-- ... (rest of your HTML code) ... -->
+</div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Get the table body
-      var calendarBody = document.querySelector('#calendar tbody');
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarBody = document.querySelector('#calendar tbody');
 
-      // Generate calendar content for the current month
-      generateCalendar(new Date());
+    generateCalendar(new Date());
 
-      function generateCalendar(date) {
-        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        var currentDate = new Date(firstDay);
+    function generateCalendar(date) {
+      var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+      var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      var currentDate = new Date(firstDay);
 
-        while (currentDate <= lastDay) {
-          var row = document.createElement('tr');
+      // Clear existing content in the calendar body
+      calendarBody.innerHTML = '';
 
-          for (var i = 0; i < 7; i++) {
-            var cell = document.createElement('td');
+      while (currentDate <= lastDay) {
+        var row = document.createElement('tr');
+
+        for (var i = 0; i < 7; i++) {
+          var cell = document.createElement('td');
+
+          if (currentDate.getMonth() === date.getMonth()) {
             cell.textContent = currentDate.getDate();
             cell.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
-
-            // Attach a click event listener to each date cell
             cell.addEventListener('click', function() {
-              // Save the selected date and navigate to the next page
               saveAndNavigateToNextPage(this.getAttribute('data-date'));
             });
-
-            row.appendChild(cell);
-            currentDate.setDate(currentDate.getDate() + 1);
           }
 
-          calendarBody.appendChild(row);
+          row.appendChild(cell);
+          currentDate.setDate(currentDate.getDate() + 1);
         }
+
+        calendarBody.appendChild(row);
       }
+    }
 
-      // Function to handle the button click event
-      function saveAndNavigateToNextPage(selectedDate) {
-        // Save the selected date to the server (similar to the previous example)
-        saveToFileOnServer(selectedDate);
+    function saveAndNavigateToNextPage(selectedDate) {
+      saveToFileOnServer(selectedDate);
 
-        // Navigate to the next page (you can customize the URL)
-        window.location.href = 'nextpage.html';
-      }
-  // Function to handle the button click event
-  function saveAndNavigateToNextPage(selectedDate) {
-    // Save the selected date to the server
-    saveToFileOnServer(selectedDate);
+      // Navigate to the next page (you can customize the URL)
+      window.location.href = 'nextpage.html';
+    }
 
-    // Navigate to the next page (you can customize the URL)
-    window.location.href = 'nextpage.html';
-  }
-
-  // Function to save the selected date to the server
-  function saveToFileOnServer(selectedDate) {
-    fetch('http://localhost:3000/saveToFile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-      body: selectedDate,
-    })
+    function saveToFileOnServer(selectedDate) {
+      // Fetch request to save the date on the server
+      fetch('http://localhost:3000/saveToFile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: selectedDate,
+      })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Failed to save the date.');
+          throw new Error('Error saving the date');
         }
-        console.log('Date saved successfully!');
       })
       .catch(error => {
         console.error('Error saving the date:', error);
       });
-  }
-
-      // Function to fetch and display saved dates
-      function fetchAndDisplaySavedDates() {
-        // Fetch the saved dates from the server
-        fetch('http://localhost:3000/getSavedDates')
-          .then(response => response.json())
-          .then(data => {
-            // Display the saved dates
-            var savedDatesContainer = document.getElementById('savedDatesContainer');
-            savedDatesContainer.innerHTML = '<h2>Saved Dates:</h2>';
-
-            if (data.dates.length > 0) {
-              var ul = document.createElement('ul');
-              data.dates.forEach(date => {
-                var li = document.createElement('li');
-                li.textContent = date;
-                ul.appendChild(li);
-              });
-              savedDatesContainer.appendChild(ul);
-            } else {
-              savedDatesContainer.innerHTML += '<p>No saved dates yet.</p>';
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching saved dates:', error);
-          });
-      }
-
-      // Call the function to fetch and display saved dates
-      fetchAndDisplaySavedDates();
-    });
-  </script>
+    }
+  });
+</script>
 
 </body>
 </html>
