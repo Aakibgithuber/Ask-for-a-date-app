@@ -1,22 +1,21 @@
-# Use an official Nginx image as the base image
-FROM nginx:alpine
 
-# Set the working directory inside the container
-WORKDIR /usr/share/nginx/html
-RUN rm -rf /usr/share/nginx/html/*
+# Use the official Nginx image as base image
+FROM nginx:latest
 
+# Copy the HTML files to the Nginx default html directory
+COPY finally.html /usr/share/nginx/html/
+COPY yes.html /usr/share/nginx/html/
+COPY nextpage.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
 
-# Copy your HTML and CSS files to the working directory
-COPY finally.html .
-COPY style.css .
-COPY yes.html .
-COPY nextpage.html . 
-
-RUN chown -R nginx:nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
-
-# Expose the default Nginx port
+# Expose port 80 for web traffic
 EXPOSE 80
 
-# Command to start Nginx when the container runs
+# Verify file permissions
+RUN chmod 644 /usr/share/nginx/html/finally.html && \
+    chmod 644 /usr/share/nginx/html/yes.html && \
+    chmod 644 /usr/share/nginx/html/nextpage.html && \
+    chmod 644 /usr/share/nginx/html/style.css
+
+# Start Nginx when the container launches
 CMD ["nginx", "-g", "daemon off;"]
